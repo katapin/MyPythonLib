@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools", "setuptools-git-versioning"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "mypythonlib"
+dynamic = ["version"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+
