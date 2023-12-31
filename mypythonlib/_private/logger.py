@@ -1,3 +1,4 @@
+"""Log user messages and output of external programs."""
 
 import os
 import time
@@ -5,6 +6,7 @@ import subprocess
 import inspect
 from enum import StrEnum
 from .pathlibext import FilePath, FilePathAbs
+from ..packaging import getmainname
 
 
 _COLOR_SEQUENCES = {'red': '91m', 'yellow': '93m', 'green': '92m',
@@ -100,14 +102,19 @@ class _OutputProcessor:
     @staticmethod
     def _getprogname():
         """Return name of the function which is not an _under and not a class member."""
+        ownpkgname = getmainname(__name__)
         modulename = progname = ''
         stack = inspect.stack()
         for frame in stack[3:]:  # i=0 is _getprogname() and i=1 and 2 is the functions inside this module
             module = inspect.getmodule(frame[0])
             progname = frame[3]
-            modulename = os.path.basename(module.__file__)
-            if modulename not in (__name__ + '.py', 'functools.py') and \
-                    progname[0] != '_' and hasattr(module, progname):
+            modulepath = module.__file__
+            modulename = os.path.basename(modulepath)
+
+            if (ownpkgname not in modulepath and   # Exclude any functions of this package
+                modulename not in ('functools.py') and  # Exclude stdlib
+                progname[0] != '_' and   # Exclude 'under'-methods
+                hasattr(module, progname) ):  # Excluded __main__
                 break
         return modulename if progname == '<module>' else progname
 
