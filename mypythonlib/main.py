@@ -14,6 +14,7 @@ __all__ = [
     "change_terminal_caption",
     "die",
     "getownname",
+    "logger_turn_on",
     "callandlog",
     "logtext",
     "print_colored_text",
